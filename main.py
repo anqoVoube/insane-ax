@@ -1,12 +1,10 @@
 import logging
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from core.database import get_session
 from logs.middleware import LoggingMiddleware
-from models.users import User
 from routers.users import user_router
 from utils.exceptions.validation import ValidationError
 

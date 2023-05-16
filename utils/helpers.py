@@ -1,9 +1,7 @@
-from typing import Any, List, Iterable, Tuple, Union, Optional, Type
+from typing import Any, Tuple, Optional, Type
 
-from sqlalchemy.engine import Row
 from sqlalchemy.exc import DBAPIError
 
-from utils.exceptions.does_not_exist import DoesNotExist
 from utils.exceptions.validation import ValidationError
 from utils.raw_sqlalchemy.select import AbstractSelect
 from pydantic import BaseModel
@@ -68,3 +66,15 @@ class GetOne(Getter):
 class GetAll(Getter):
     async def get_all_in_pydantic(self):
         return [await self.map_instance(instance) for instance in self._data]
+
+
+# ----- NOT ENOUGH TIME FOR REFACTORING :(
+async def create_query_for_update(table_name: str, data: dict):
+    change = ", ".join([f"{key} = :{key}" for key in data.keys()])
+    where_query = f"id = :id"
+    return f"UPDATE {table_name} SET {change} WHERE {where_query}"
+
+
+async def create_query_for_delete(table_name: str):
+    where_query = f"id = :id"
+    return f"DELETE FROM {table_name} WHERE {where_query}"

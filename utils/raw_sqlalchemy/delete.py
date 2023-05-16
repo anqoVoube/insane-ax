@@ -1,5 +1,4 @@
 from abc import abstractmethod, ABC
-from typing import Any, Tuple
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,18 +6,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from utils.raw_sqlalchemy.base import BaseRawSQLHandler
 
 
-class AbstractSelect(ABC):
+class AbstractDelete(ABC):
     @abstractmethod
-    async def fetchall(self) -> Tuple[Any]:
+    async def execute(self):
         pass
 
 
-class Select(BaseRawSQLHandler, AbstractSelect):
+class Delete(BaseRawSQLHandler, AbstractDelete):
     def __init__(self, db: AsyncSession, query: str, **kwargs):
         super().__init__(query, **kwargs)
         self._db = db
 
-    async def fetchall(self):
+    async def execute(self) -> None:
         await self.check_parameters()
-        result = await self._db.execute(text(self._query), self._kwargs)
-        return result.fetchall()
+        await self._db.execute(text(self._query), self._kwargs)
+        await self._db.commit()
