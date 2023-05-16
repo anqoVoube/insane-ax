@@ -8,6 +8,7 @@ from core.database import get_session
 from logs.middleware import LoggingMiddleware
 from models.users import User
 from routers.users import user_router
+from utils.exceptions.validation import ValidationError
 
 app = FastAPI()
 
@@ -28,41 +29,23 @@ async def logs(request: Request, call_next):
     return response
 
 
-class UnicornException(Exception):
-    def __init__(self, name: str):
-        self.name = name
-
-
 @app.exception_handler(Exception)
 async def unicorn_exception_handler(request: Request, exc: Exception):
     # TODO: Notification service via gmail or telegram bot
     return JSONResponse(
+        # Change status :) I'm a teapot
         status_code=418,
-        content={"message": f"Oops! You did something wrong. There goes a rainbow..."},
+        content={"message": f"Oops! Something went wrong :("},
     )
 
 
-@app.exception_handler(UnicornException)
-async def unicorn_exception_handler(request: Request, exc: UnicornException):
+@app.exception_handler(ValidationError)
+async def unicorn_exception_handler(request: Request, exc: ValidationError):
+    # TODO: Notification service via gmail or telegram bot
     return JSONResponse(
-        status_code=418,
-        content={"message": f"Oops! {exc.name} You did something wrong. There goes a rainbow..."},
+        status_code=400,
+        content={"message": exc.message},
     )
-
-
-@app.get("/")
-async def root(db=Depends(get_session)):
-    tom = User(first_name="Tom", last_name="Person")
-    db.add(tom)  # добавляем в бд
-    await db.commit()
-    return {}
-
-
-@app.get("/unicorns/{name}")
-async def read_unicorn(name: str):
-    if name == "yolo":
-        raise UnicornException(name=name)
-    return {"unicorn_name": name}
 
 
 app.include_router(user_router, prefix="/users")

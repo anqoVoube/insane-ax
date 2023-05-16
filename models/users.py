@@ -1,5 +1,6 @@
 import uuid
 
+from pydantic_sqlalchemy import sqlalchemy_to_pydantic
 from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import declarative_base
 from sqlalchemy_utils import UUIDType
@@ -21,3 +22,6 @@ class User(Base):
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+
+PydanticUser = sqlalchemy_to_pydantic(User)
