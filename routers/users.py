@@ -44,14 +44,16 @@ async def delete_by_id(user_id: str, db=Depends(get_session)):
     await delete(user_id, db)
 
 
-@user_router.post("/delete/{user_id}", status_code=204)
-async def delete_by_id(user_id: str, db=Depends(get_session)):
-    await delete(user_id, db)
-
-
 @user_router.get("/", status_code=200)
 async def delete_by_id(search: str, db=Depends(get_session)):
     # NO TIME FOR REFACTORING :(
-    db_response = await db.execute(text("""SELECT * FROM users WHERE CONCAT(first_name, ' ', last_name) LIKE :name"""), {"name": f"%{search}%"})
-    result = await GetAll(data=db_response.fetchall(), map_to=UserRetrieveSchema, on_error_message="Internal server error").get_all_in_pydantic()
+    db_response = await db.execute(
+        text("""SELECT * FROM users WHERE CONCAT(first_name, ' ', last_name) LIKE :name"""),
+        {"name": f"%{search}%"}
+    )
+    result = await GetAll(
+        data=db_response.fetchall(),
+        map_to=UserRetrieveSchema,
+        on_error_message="Internal server error"
+    ).get_all_in_pydantic()
     return result

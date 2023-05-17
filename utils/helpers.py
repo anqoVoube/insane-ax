@@ -21,7 +21,7 @@ class Getter:
 
     async def map_instance(self, response):
         return self._map_to(
-            **{field: value for field, value in zip(response.keys(), response)}
+            **{field: value for field, value in zip(response._fields, response)}
         )
 
     @classmethod
