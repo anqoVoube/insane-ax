@@ -9,7 +9,5 @@ async def test_create_user():
         "/users/create/",
         json={"first_name": "Jamoliddin", "last_name": "Bakhriddinov"},
     )
-    response = client.get(
-        "users/all/"
-    )
-    assert response.status_code == 200
+
+    assert response.status_code == 201
